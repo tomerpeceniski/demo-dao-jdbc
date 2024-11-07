@@ -26,24 +26,24 @@ public class SellerDaoJDBC implements SellerDao {
         PreparedStatement st = null;
         try {
             st = conn.prepareStatement(
-                "INSERT INTO seller "
-                        + "(Name, Email, BirthDate, BaseSalary, DepartmentId) "
-                        + "VALUES "
-                        + "(?, ?, ?, ?, ?) ",
-                        Statement.RETURN_GENERATED_KEYS);
+                    "INSERT INTO seller "
+                            + "(Name, Email, BirthDate, BaseSalary, DepartmentId) "
+                            + "VALUES "
+                            + "(?, ?, ?, ?, ?) ",
+                    Statement.RETURN_GENERATED_KEYS);
             st.setString(1, obj.getName());
             st.setString(2, obj.getEmail());
-            ZoneOffset zone = ZoneOffset.of("Z"); 
+            ZoneOffset zone = ZoneOffset.of("Z");
             LocalTime time = LocalTime.now();
-            st.setDate(3, new java.sql.Date(obj.getBirthDate().toEpochSecond(time, zone)));
-            st.setDouble(4,obj.getBaseSalary());
+            st.setDate(3, new java.sql.Date(obj.getBirthDate().toEpochSecond(time, zone)*1000));
+            st.setDouble(4, obj.getBaseSalary());
             st.setInt(5, obj.getDepartment().getId());
 
             int rowAffected = st.executeUpdate();
 
-            if (rowAffected > 0 ) {
+            if (rowAffected > 0) {
                 ResultSet rs = st.getGeneratedKeys();
-                if(rs.next()) {
+                if (rs.next()) {
                     int id = rs.getInt(1);
                     obj.setId(id);
                 }
@@ -60,8 +60,28 @@ public class SellerDaoJDBC implements SellerDao {
 
     @Override
     public void update(Seller obj) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'update'");
+        PreparedStatement st = null;
+        try {
+            st = conn.prepareStatement(
+                    "UPDATE seller "
+                            + "SET Name = ?, Email = ?, BirthDate = ?, BaseSalary = ?, DepartmentId = ? "
+                            + "WHERE Id = ?");
+            st.setString(1, obj.getName());
+            st.setString(2, obj.getEmail());
+            ZoneOffset zone = ZoneOffset.of("Z");
+            LocalTime time = LocalTime.now();
+            st.setDate(3, new java.sql.Date(obj.getBirthDate().toEpochSecond(time, zone)*1000));
+            st.setDouble(4, obj.getBaseSalary());
+            st.setInt(5, obj.getDepartment().getId());
+            st.setInt(6, obj.getId());
+
+            st.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new DbException(e.getMessage());
+        } finally {
+            DB.closeStatement(st);
+        }
     }
 
     @Override
