@@ -6,11 +6,14 @@ import model.dao.SellerDao;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Scanner;
 
 import model.dao.DaoFactory;
 
 public class Program {
     public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
         SellerDao sellerDao = DaoFactory.createSellerDao();
 
         System.out.println("=== TEST 1:  seller findById ===");
@@ -45,5 +48,14 @@ public class Program {
         sellerDao.update(seller);
         System.out.println("Update completed");
         System.out.println();
+
+        System.out.println("=== TEST 6:  seller deletion ===");
+        System.out.print("Which ID do you want to delete? ");
+        int id = sc.nextInt();
+        sellerDao.deleteById(id);
+        System.out.println("Deletion completed. ID deleted: " + id);
+        System.out.println();
+
+        sc.close();
     }
 }

@@ -86,8 +86,20 @@ public class SellerDaoJDBC implements SellerDao {
 
     @Override
     public void deleteById(Integer id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'deleteById'");
+        PreparedStatement st = null;
+        try {
+            st = conn.prepareStatement("DELETE FROM seller WHERE id = ?");
+            st.setInt(1, id);
+            int rowsAffected = st.executeUpdate();
+
+            if (rowsAffected == 0) {
+                throw new DbException("Unexpected Error: Inserted ID does not exist");
+            }
+        } catch (SQLException e) {
+            throw new DbException(e.getMessage());
+        } finally {
+            DB.closeStatement(st);
+        }
     }
 
     @Override
